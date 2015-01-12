@@ -253,6 +253,7 @@
 	{
 		audio = document.getElementsByTagName("audio")[0];
 		audio.addEventListener("timeupdate", timeUpdateHandler);
+		audio.addEventListener("loadedmetadata", loadMetaData);
 		audio.addEventListener("play", playPauseHandler);
 		audio.addEventListener("pause", playPauseHandler);
 		audio.play();
@@ -627,6 +628,24 @@
 		{
 			console.log("For some reason, f is null ;_;");
 			console.log(f);
+		}
+	}
+
+	/* This naïvely replaces template style text in the textarea, populated from the Ogg metadata block */
+	function loadMetaData()
+	{
+		if (audio)
+		{
+			if (audio.mozGetMetadata)
+			{
+				episode		= audio.mozGetMetadata();
+				t.value		= t.value.replace( "{TITLE}", episode['title'].substring(6) );
+				t.value		= t.value.replace( "{SEASON}", ( "00" + episode['album number'] ).slice(-2) );
+				t.value		= t.value.replace( "{EPISODE}", ( "00" + episode['tracknumber'] ).slice(-2) );
+				t.value		= t.value.replace( "{RECORDED}", episode['date'] );
+			}
+			else
+				console.log('Metadata cannot be read, you need a better browser, yo');
 		}
 	}
 
